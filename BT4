@@ -1,0 +1,51 @@
+// Specify the version of Solidity to be used.
+pragma solidity ^0.6;
+
+// Define the main contract named Student_management.
+contract Student_management {
+    // Define a struct to represent a student.
+    struct Student {
+        int stud_id;
+        string name;
+        string department;
+    }
+    
+    // Declare an array to store student records.
+    Student[] private Students;
+
+    // Event to log Ether received.
+    event EtherReceived(address indexed sender, uint amount);
+
+    // Function to add a new student to the Students array.
+    function add_stud(int stud_id, string memory name, string memory department) public {
+        // Create a new student instance and add it to the array.
+        Student memory stud = Student(stud_id, name, department);
+        Students.push(stud);
+    }
+
+    // Function to get the name and department of a student by their ID.
+    function getStudent(int stud_id) public view returns (string memory, string memory) {
+        for (uint i = 0; i < Students.length; i++) {
+            Student memory stud = Students[i];
+            // Check if the student ID matches the provided ID.
+            if (stud.stud_id == stud_id) {
+                // Return the name and department of the student.
+                return (stud.name, stud.department);
+            }
+        }
+        // Return "Not Found" if the student with the provided ID is not found.
+        return ("Not Found", "Not Found");
+    }
+
+    // Fallback function to receive Ether.
+     fallback() external payable {
+        // Emit an event indicating Ether has been received.
+        emit EtherReceived(msg.sender, msg.value);
+    }
+
+    // Receive function to handle plain Ether transfers without data.
+    receive() external payable {
+        // Emit an event indicating Ether has been received.
+        emit EtherReceived(msg.sender, msg.value);
+    }
+}
