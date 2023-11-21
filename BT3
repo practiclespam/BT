@@ -1,0 +1,51 @@
+// Specify the version of Solidity to be used.
+pragma solidity ^0.6;
+
+contract banking {
+    // Mapping to store user account balances.
+    mapping(address => uint) public user_account;
+
+    // Mapping to check if a user account exists.
+    mapping(address => bool) public user_exists;
+
+    // Function to create a new account.
+    function create_account() public payable returns (string memory) {
+        require(!user_exists[msg.sender], "Account already created");
+        
+        if (msg.value == 0) {
+            user_account[msg.sender] = 0;
+            user_exists[msg.sender] = true;
+            return "Account created";
+        }
+
+        user_account[msg.sender] = msg.value;
+        user_exists[msg.sender] = true;
+        return "Account created";
+    }
+
+    // Function to deposit funds into the account.
+    function deposit() public payable returns (string memory) {
+        require(user_exists[msg.sender], "Account not created");
+        require(msg.value > 0, "Value for deposit is zero");
+
+        user_account[msg.sender] += msg.value;
+        return "Deposited successfully";
+    }
+
+    // Function to withdraw funds from the account.
+    function withdraw(address withdrawTo, uint amount) public returns (string memory) {
+    require(user_account[msg.sender] >= amount, "Insufficient balance");
+    require(user_exists[msg.sender], "Account not created");
+    require(amount > 0, "Amount should be more than zero");
+
+    user_account[msg.sender] -= amount;
+    payable(withdrawTo).transfer(amount);
+    return "Withdrawal successful";
+}
+
+
+    // Function to check the balance of the caller's account.
+    function user_balance() public view returns (bool, uint) {
+        return (user_exists[msg.sender], user_account[msg.sender]);
+    }
+}
